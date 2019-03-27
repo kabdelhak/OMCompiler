@@ -1651,6 +1651,10 @@ template functionInput(SimCode simCode, ModelInfo modelInfo, String modelNamePre
         else error(sourceInfo(), 'Cannot get attributes of alias variable <%crefStr(name)%>. Alias variables should have been replaced by the compiler before SimCode')
         ;separator="\n"
       %>
+      <%{vars.stateVars, vars.derivativeVars, vars.algVars, vars.inputVars, vars.outputVars} |> SIMVAR(name=name, type_=T_REAL()) hasindex i0=>
+        '<%varArrayStartName(cref2simvar(name, getSimCode()))%> = <%varArrayNameValues(cref2simvar(name, getSimCode()),0,false,false)%>;'
+        ;separator="\n"
+      %>
 
       TRACE_POP
       return 0;
@@ -3246,7 +3250,14 @@ template functionStoreDelayed(DelayedExpression delayed, String modelNamePrefix)
       let delayExpMax = daeExp(delayMax, contextSimulationNonDiscrete, &preExp, &varDecls, &auxFunction)
       <<
       <%preExp%>
-      storeDelayedExpression(data, threadData, <%id%>, <%eRes%>, data->localData[0]->timeValue, <%delayExp%>, <%delayExpMax%>);<%\n%>
+      if(data->localData[0]->timeValue>data->simulationInfo->tStart - <%delayExp%>)
+      {
+        storeDelayedExpression(data, threadData, <%id%>, <%eRes%>, data->localData[0]->timeValue, <%delayExp%>, <%delayExpMax%>);<%\n%>
+      }
+      else
+      {
+        storeDelayedExpression(data, threadData, <%id%>,<%expArrayStartName(e)%>, data->localData[0]->timeValue, <%delayExp%>, <%delayExpMax%>);<%\n%>
+      }
       >>
     ))
   <<

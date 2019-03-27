@@ -143,7 +143,7 @@ double delayImpl(DATA* data, threadData_t *threadData, int exprNumber, double ex
    * delayTime need to be a parameter expression. See also Section 3.7.2.1.
    * For non-scalar arguments the function is vectorized according to Section 10.6.12.
    */
-  if(time <= data->simulationInfo->tStart + delayTime)
+  if(time <= data->simulationInfo->tStart + 2 * delayTime)
   {
     double res = ((TIME_AND_VALUE*)getRingData(delayStruct, 0))->value;
     infoStreamPrint(LOG_EVENTS_V, 0, "findTime: time <= tStart + delayTime: [%d] = %g",exprNumber, res);
@@ -178,6 +178,7 @@ double delayImpl(DATA* data, threadData_t *threadData, int exprNumber, double ex
       value0 = ((TIME_AND_VALUE*)getRingData(delayStruct, i))->value;
 
       /* was it the last value? */
+
       if(i+1 == length)
       {
         return value0;

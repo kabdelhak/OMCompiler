@@ -7225,6 +7225,22 @@ template varArrayName(SimVar var)
   case SIMVAR(__) then '<%crefShortType(name)%>Vars'
 end varArrayName;
 
+template expArrayStartName(DAE.Exp e)
+::=
+match e
+  case e as CREF(componentRef=cr) then
+    '<%varArrayStartName(cref2simvar(cr, getSimCode()))%>'
+end match
+end expArrayStartName;
+
+template varArrayStartName(SimVar var)
+::=
+match var
+  case SIMVAR(__) then
+    'data->modelData-><%crefShortType(name)%>VarsData[<%index%>].attribute.start'
+end match
+end varArrayStartName;
+
 template crefVarInfo(ComponentRef cr)
 ::=
   match cref2simvar(cr, getSimCode())
